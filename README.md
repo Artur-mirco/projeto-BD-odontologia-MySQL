@@ -1,0 +1,1 @@
+Arquivo visa ser demonstração da aplicação de alguns modelos de criação e condução de bancos de dados, aprendidos neste semestre, atravez de trabalho comunitário de extensão. Disciplina BANCO DE DADOS. Faculdade ESTACIO. Curso: Tecnólogo em Ciência de Dados.
