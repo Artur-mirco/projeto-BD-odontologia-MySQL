@@ -1,0 +1,110 @@
+CREATE DATABASE projeto;
+USE projeto;
+
+CREATE TABLE Clientes (
+    ID INT(4) ZEROFILL AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(30) NOT NULL,
+    CPF CHAR(14) NOT NULL UNIQUE,
+    telefone CHAR(15) NOT NULL,
+    endereco VARCHAR(50),
+    numero CHAR(6),
+    bairro VARCHAR(20),
+    cidade VARCHAR(20),
+    CEP CHAR(9) NOT NULL
+);
+
+CREATE TABLE Anamnese (
+    ID INT(4) ZEROFILL,
+    tratamento_medico ENUM('S', 'N') NOT NULL,
+    gravida ENUM('S', 'N') NOT NULL,
+    regime ENUM('S', 'N') NOT NULL,
+    diabetes ENUM('S', 'N') NOT NULL,
+    alergias ENUM('S', 'N') NOT NULL,
+    febre_reumatica ENUM('S', 'N') NOT NULL,
+    problemas_coagulacao ENUM('S', 'N') NOT NULL,
+    doenca_cardiovascular ENUM('S', 'N') NOT NULL,
+    problemas_hemorragicos ENUM('S', 'N') NOT NULL,
+    problemas_anestesia ENUM('S', 'N') NOT NULL,
+    alergia_medicamentos ENUM('S', 'N') NOT NULL,
+    hepatite ENUM('S', 'N') NOT NULL,
+    portador_HIV ENUM('S', 'N') NOT NULL,
+    usa_drogas ENUM('S', 'N') NOT NULL,
+    fumante ENUM('S', 'N') NOT NULL,
+    ja_fumou ENUM('S', 'N') NOT NULL,
+    pressao_arterial ENUM('Baixa', 'Normal', 'Alta') NOT NULL,
+    problemas_respiratorios ENUM('S', 'N') NOT NULL,
+    quais_respiratorios VARCHAR(300),
+    motivo_consulta VARCHAR(300),
+    observacoes VARCHAR(300),
+    PRIMARY KEY (ID),
+    FOREIGN KEY (ID) REFERENCES Clientes(ID)
+);
+
+CREATE TABLE Odontograma (
+    ID INT(4) ZEROFILL,
+    data DATE NOT NULL,
+    dente INT(2) NOT NULL,
+    procedimento VARCHAR(300) NOT NULL,
+    PRIMARY KEY (ID, dente),
+    FOREIGN KEY (ID) REFERENCES Clientes(ID)
+);
+
+CREATE TABLE Local (
+    idlocal INT(4) ZEROFILL AUTO_INCREMENT PRIMARY KEY,
+    endereco VARCHAR(50),
+    numero CHAR(6),
+    bairro VARCHAR(20),
+    cidade VARCHAR(20),
+    CEP CHAR(9) NOT NULL
+    
+);
+
+CREATE TABLE Agenda (
+    ID INT(4) ZEROFILL,
+    data DATE NOT NULL,
+    horario TIME NOT NULL UNIQUE,
+    idlocal INT(4) ZEROFILL,
+    PRIMARY KEY (ID, horario),
+    FOREIGN KEY (ID) REFERENCES Clientes(ID),
+    FOREIGN KEY (idlocal) REFERENCES Local(idlocal)
+);
+
+CREATE TABLE atestados (
+ID INT(4) ZEROFILL,
+Local char(100),
+data DATE NOT NULL,
+conteudo char(200),
+FOREIGN KEY (ID) REFERENCES Clientes(ID)
+);
+
+CREATE TABLE receituario (
+ID INT(4) ZEROFILL,
+Local char(100),
+data DATE NOT NULL,
+conteudo char(200),
+FOREIGN KEY (ID) REFERENCES Clientes(ID)
+);
+
+DELIMITER //
+
+CREATE TRIGGER cpf_validation
+BEFORE INSERT ON Clientes
+FOR EACH ROW
+BEGIN
+    IF NOT (NEW.CPF REGEXP '^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}\\-[0-9]{2}$') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Formato de CPF inválido.';
+    END IF;
+END//
+
+CREATE TRIGGER cep_validation
+BEFORE INSERT ON Clientes
+FOR EACH ROW
+BEGIN
+    IF NOT (NEW.CEP REGEXP '^[0-9]{5}\\-[0-9]{3}$') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Formato de CEP inválido.';
+    END IF;
+END//
+
+DELIMITER ;
